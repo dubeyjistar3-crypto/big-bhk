@@ -9,6 +9,7 @@ const seed = require('./seed');
 const app = express();
 const port = process.env.PORT || 5000;
 const basePath = process.env.BASE_PATH || '/bigbhk';
+const mongoStatus = { lastError: null, seeded: false };
 const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || 'http://localhost:3000')
   .split(',')
   .map((origin) => origin.trim())
@@ -30,6 +31,7 @@ const mountRoutes = (prefix = '') => {
     ok: true,
     service: 'bigbhk-api',
     mongoConnected: mongoose.connection.readyState === 1,
+    mongoLastError: mongoStatus.lastError,
   }));
   app.use(`${prefix}/api/auth`, require('./routes/authRoutes'));
   app.use(`${prefix}/api/properties`, require('./routes/propertyRoutes'));
@@ -56,12 +58,23 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ message: err.message || 'Server error' });
 });
 
-connectDB()
-  .then(seed)
-  .catch((error) => {
+async function connectMongoWithRetry() {
+  try {
+    await connectDB();
+    mongoStatus.lastError = null;
+    if (!mongoStatus.seeded) {
+      await seed();
+      mongoStatus.seeded = true;
+    }
+  } catch (error) {
+    mongoStatus.lastError = error.message;
     console.warn(`MongoDB unavailable: ${error.message}`);
-    console.warn('API is running in offline mode. Admin login will work, but data will use browser/local fallback until MongoDB is connected.');
-  })
-  .finally(() => {
-    app.listen(port, () => console.log(`API running on port ${port}`));
-  });
+    console.warn('Retrying MongoDB connection in 30 seconds.');
+    setTimeout(connectMongoWithRetry, 30000);
+  }
+}
+
+app.listen(port, () => {
+  console.log(`API running on port ${port}`);
+  connectMongoWithRetry();
+});
