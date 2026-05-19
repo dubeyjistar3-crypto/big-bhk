@@ -27,6 +27,12 @@ function hasSavedPageData(page, payload) {
     && page.heroText === payload.heroText;
 }
 
+function wait(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 function AdminPages() {
   const [pages, setPages] = useState(pageOrder.map((slug) => defaultPages[slug]));
   const [activeSlug, setActiveSlug] = useState('about');
@@ -58,11 +64,18 @@ function AdminPages() {
     };
 
     try {
-      const res = await api.put(`/pages/${activeSlug}`, payload);
+      let res;
+      try {
+        res = await api.put(`/pages/${activeSlug}`, payload);
+      } catch (saveError) {
+        await wait(1500);
+        res = await api.put(`/pages/${activeSlug}`, payload);
+      }
       setPages((current) => current.map((page) => (page.slug === activeSlug ? res.data.page : page)));
       setMessage('Page content saved successfully.');
     } catch {
       try {
+        await wait(1500);
         const verify = await api.get(`/pages/${activeSlug}`);
         if (hasSavedPageData(verify.data.page, payload)) {
           setPages((current) => current.map((page) => (page.slug === activeSlug ? verify.data.page : page)));
