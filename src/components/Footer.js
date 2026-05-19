@@ -8,9 +8,20 @@ function Footer() {
   const [contact, setContact] = useState(defaultPages.contact);
 
   useEffect(() => {
-    api.get('/pages/contact')
-      .then((res) => setContact(res.data.page || defaultPages.contact))
-      .catch(() => setContact(getLocalPage('contact')));
+    const loadContact = () => {
+      api.get(`/pages/contact?ts=${Date.now()}`)
+        .then((res) => setContact(res.data.page || defaultPages.contact))
+        .catch(() => setContact(getLocalPage('contact') || defaultPages.contact));
+    };
+
+    loadContact();
+    window.addEventListener('focus', loadContact);
+    window.addEventListener('pageshow', loadContact);
+
+    return () => {
+      window.removeEventListener('focus', loadContact);
+      window.removeEventListener('pageshow', loadContact);
+    };
   }, []);
 
   return (
