@@ -37,7 +37,16 @@ export function AuthProvider({ children }) {
       const apiUnavailable = !error.response;
 
       if (apiUnavailable) {
-        throw new Error('Backend API is not running. Start it with npm run server, then login again.');
+        try {
+          await api.get('/health', { timeout: 60000 });
+          const retry = await api.post('/auth/login', { email, password }, { timeout: 60000 });
+          localStorage.setItem('star_estates_token', retry.data.token);
+          setToken(retry.data.token);
+          setAdmin(retry.data.admin);
+          return;
+        } catch {
+          throw new Error('Server wake ho raha hai. 20-30 seconds baad dobara login try kijiye.');
+        }
       }
 
       throw new Error(error.response?.data?.message || 'Invalid email or password');
