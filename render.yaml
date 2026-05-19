@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: bigbhk-api
+    env: node
+    plan: free
+    buildCommand: npm install --omit=dev
+    startCommand: npm run render-start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BASE_PATH
+        value: ""
+      - key: CLIENT_URLS
+        value: https://classicweddingcars.in,https://www.classicweddingcars.in
+      - key: ADMIN_NAME
+        value: BIG BHK Admin
+      - key: ADMIN_EMAIL
+        value: admin@bigbhk.com
+      - key: ADMIN_PASSWORD
+        value: admin123
+      - key: JWT_SECRET
+        sync: false
+      - key: MONGO_URI
+        sync: false

@@ -1,0 +1,33 @@
+export const defaultPages = {
+  about: {
+    slug: 'about',
+    title: 'About Us',
+    seoTitle: 'About Us',
+    seoDescription: 'About BIG BHK, premium real estate consultants for NCR luxury homes.',
+    eyebrow: 'About us',
+    heroTitle: 'Luxury property decisions, guided with precision.',
+    heroText: 'BIG BHK curates premium homes, villa estates and investment-grade addresses with clear market intelligence and concierge-level support.',
+    sectionEyebrow: 'Our approach',
+    sectionTitle: 'We turn a crowded market into a refined property shortlist.',
+    sectionText: 'Our team studies location strength, construction quality, developer track record, payment plans, rental demand and resale liquidity before recommending a property. The result is a calmer, sharper and more confident buying journey.',
+    features: [
+      { icon: 'Gem', title: 'Luxury inventory', text: 'Premium apartments, villas, penthouses and branded residences selected for serious buyers.' },
+      { icon: 'BriefcaseBusiness', title: 'Investment clarity', text: 'Pricing, appreciation potential and rental yield reviewed before every recommendation.' },
+      { icon: 'Users', title: 'Personal shortlist', text: 'Options shaped around budget, lifestyle, commute, family needs and possession timeline.' },
+      { icon: 'Award', title: 'End-to-end support', text: 'Site visits, negotiation, paperwork, payment schedules and handover coordination.' },
+    ],
+  },
+  contact: {
+    slug: 'contact',
+    title: 'Contact',
+    seoTitle: 'Contact',
+    seoDescription: 'Contact BIG BHK for luxury real estate enquiries and site visits.',
+    eyebrow: 'Contact us',
+    heroTitle: "Let's build your property shortlist.",
+    heroText: 'Tell us what you are looking for and a senior advisor will reach out.',
+    contactName: 'BIG BHK Advisory',
+    phone: '+91 98765 43210',
+    email: 'sales@bigbhk.com',
+    address: 'Golf Course Road, Gurugram',
+  },
+};

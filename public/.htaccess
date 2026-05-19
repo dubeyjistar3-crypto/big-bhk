@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+  Options -MultiViews
+  RewriteEngine On
+  RewriteBase /bigbhk/
+
+  RewriteRule ^api/ - [L]
+  RewriteRule ^static/ - [L]
+  RewriteRule ^.*\.(js|css|png|jpg|jpeg|gif|svg|ico|json|txt|map)$ - [L]
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /bigbhk/index.html [L]
+</IfModule>

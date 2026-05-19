@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&display=swap');
+
+:root {
+  --ink: #0d0b08;
+  --ink-soft: #1a1710;
+  --muted: #7a7166;
+  --muted-light: #a89f96;
+  --line: #e2d9cc;
+  --line-light: #ede8e1;
+  --paper: #faf9f6;
+  --cream: #f3ede4;
+  --cream-dark: #e8dfd2;
+
+  --yellow: #f5c518;
+  --yellow-dark: #c9a000;
+  --yellow-light: #ffd740;
+  --yellow-pale: rgba(245, 197, 24, 0.12);
+
+  --dark: #0a0908;
+  --dark-card: #111009;
+  --green: #0f3d2c;
+  --white: #ffffff;
+
+  --shadow-sm: 0 2px 12px rgba(13, 11, 8, 0.07);
+  --shadow: 0 8px 32px rgba(13, 11, 8, 0.13);
+  --shadow-lg: 0 24px 72px rgba(13, 11, 8, 0.2);
+
+  --radius: 8px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { overflow-x: hidden; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; }
+img { display: block; max-width: 100%; }
+
+/* ── Buttons ── */
+.btn {
+  align-items: center; border: 1.5px solid transparent; border-radius: var(--radius);
+  cursor: pointer; display: inline-flex; font-weight: 700; font-size: 0.84rem;
+  gap: 7px; justify-content: center; min-height: 40px; padding: 0 18px;
+  letter-spacing: 0.01em; transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.btn-primary {
+  background: var(--yellow); color: var(--ink); border-color: var(--yellow);
+  box-shadow: 0 4px 18px rgba(245,197,24,0.32);
+}
+.btn-primary:hover { background: var(--yellow-dark); border-color: var(--yellow-dark); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(245,197,24,0.42); }
+.btn-ghost { background: transparent; border-color: rgba(255,255,255,0.32); color: #fff; }
+.btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.6); }
+.btn-outline { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn-outline:hover { border-color: var(--yellow); background: var(--yellow-pale); }
+.icon-btn {
+  align-items: center; background: var(--white); border: 1.5px solid var(--line);
+  border-radius: var(--radius); cursor: pointer; display: inline-flex;
+  height: 38px; justify-content: center; width: 38px; transition: all 0.2s;
+}
+.icon-btn:hover { border-color: var(--yellow); color: var(--yellow-dark); }
+
+/* ── Eyebrow ── */
+.eyebrow {
+  align-items: center; color: var(--yellow-dark); display: inline-flex;
+  font-size: 0.72rem; font-weight: 700; gap: 8px; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.eyebrow::before {
+  content: ''; display: inline-block; width: 22px; height: 2px;
+  background: var(--yellow); border-radius: 2px;
+}
+
+h1, h2, h3 { font-family: 'DM Sans', sans-serif; line-height: 1.1; }
