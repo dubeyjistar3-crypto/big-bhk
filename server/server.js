@@ -1,6 +1,7 @@
 require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
+const mongoose = require('mongoose');
 const path = require('path');
 const connectDB = require('./config/db');
 const seed = require('./seed');
@@ -25,7 +26,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 const mountRoutes = (prefix = '') => {
-  app.get(`${prefix}/api/health`, (req, res) => res.json({ ok: true, service: 'bigbhk-api' }));
+  app.get(`${prefix}/api/health`, (req, res) => res.json({
+    ok: true,
+    service: 'bigbhk-api',
+    mongoConnected: mongoose.connection.readyState === 1,
+  }));
   app.use(`${prefix}/api/auth`, require('./routes/authRoutes'));
   app.use(`${prefix}/api/properties`, require('./routes/propertyRoutes'));
   app.use(`${prefix}/api/enquiries`, require('./routes/enquiryRoutes'));
