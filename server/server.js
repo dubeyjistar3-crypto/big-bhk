@@ -10,6 +10,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 const basePath = process.env.BASE_PATH || '/bigbhk';
 const mongoStatus = { lastError: null, seeded: false };
+const mongoReadyStates = ['disconnected', 'connected', 'connecting', 'disconnecting'];
 const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || 'http://localhost:3000')
   .split(',')
   .map((origin) => origin.trim())
@@ -31,6 +32,8 @@ const mountRoutes = (prefix = '') => {
     ok: true,
     service: 'bigbhk-api',
     mongoConnected: mongoose.connection.readyState === 1,
+    mongoReadyState: mongoReadyStates[mongoose.connection.readyState] || 'unknown',
+    mongoUriConfigured: Boolean(process.env.MONGO_URI),
     mongoLastError: mongoStatus.lastError,
   }));
   app.use(`${prefix}/api/auth`, require('./routes/authRoutes'));
