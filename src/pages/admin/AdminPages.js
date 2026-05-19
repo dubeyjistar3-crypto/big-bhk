@@ -20,6 +20,13 @@ function parseFeatureText(value) {
     .filter((feature) => feature.title && feature.text);
 }
 
+function hasSavedPageData(page, payload) {
+  return page
+    && page.seoTitle === payload.seoTitle
+    && page.heroTitle === payload.heroTitle
+    && page.heroText === payload.heroText;
+}
+
 function AdminPages() {
   const [pages, setPages] = useState(pageOrder.map((slug) => defaultPages[slug]));
   const [activeSlug, setActiveSlug] = useState('about');
@@ -55,6 +62,17 @@ function AdminPages() {
       setPages((current) => current.map((page) => (page.slug === activeSlug ? res.data.page : page)));
       setMessage('Page content saved successfully.');
     } catch {
+      try {
+        const verify = await api.get(`/pages/${activeSlug}`);
+        if (hasSavedPageData(verify.data.page, payload)) {
+          setPages((current) => current.map((page) => (page.slug === activeSlug ? verify.data.page : page)));
+          setMessage('Page content saved successfully.');
+          return;
+        }
+      } catch {
+        // Fall through to the browser fallback below.
+      }
+
       const saved = saveLocalPage(activeSlug, payload);
       setPages((current) => current.map((page) => (page.slug === activeSlug ? saved : page)));
       setMessage('API/MongoDB abhi connected nahi hai. Content is browser me locally save ho gaya hai.');
