@@ -7,7 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 function AdminLogin() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: 'admin@bigbhk.com', password: 'admin123' });
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
 
   const submit = async (event) => {
@@ -23,7 +23,7 @@ function AdminLogin() {
 
   return (
     <section className="login-page">
-      <form className="login-card" onSubmit={submit}>
+      <form className="login-card" onSubmit={submit} autoComplete="off">
         <div className="login-brand brand-logo" aria-label="BIG BHK">
           <span className="brand-logo-badge">BB</span>
           <span className="brand-logo-text">
@@ -36,8 +36,10 @@ function AdminLogin() {
         <label htmlFor="admin-email">Email Address</label>
         <input
           id="admin-email"
+          name="bigbhk-admin-email"
           required
           type="email"
+          autoComplete="off"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
@@ -45,8 +47,10 @@ function AdminLogin() {
         <label htmlFor="admin-password">Password</label>
         <input
           id="admin-password"
+          name="bigbhk-admin-passcode"
           required
           type="password"
+          autoComplete="new-password"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
