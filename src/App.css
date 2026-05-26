@@ -1137,18 +1137,18 @@ textarea { min-height: 130px; resize: vertical; }
   text-align: center;
 }
 .amenity-icon-item::before {
-  background: linear-gradient(180deg, #d8b44a, #b88a20);
-  border-radius: 0 0 6px 6px;
+  background: linear-gradient(90deg, rgba(211, 170, 58, 0), rgba(211, 170, 58, 0.55), rgba(211, 170, 58, 0));
+  border-radius: 999px;
   content: '';
-  height: 30px;
-  left: 18px;
+  height: 2px;
+  left: 18%;
   position: absolute;
-  top: 0;
-  width: 14px;
+  right: 18%;
+  top: 14px;
 }
 .amenity-slide svg {
-  background: rgba(211, 170, 58, 0.1);
-  border: 1px solid rgba(211, 170, 58, 0.18);
+  background: linear-gradient(180deg, #fff, #f6f1e8);
+  border: 1px solid rgba(211, 170, 58, 0.16);
   border-radius: 999px;
   color: #171717;
   flex-shrink: 0;
@@ -2393,9 +2393,9 @@ tr:hover td { background: rgba(245,197,24,0.02); }
     padding: 20px 10px 16px;
   }
   .amenity-icon-item::before {
-    height: 24px;
-    left: 14px;
-    width: 12px;
+    height: 2px;
+    left: 20%;
+    right: 20%;
   }
   .amenity-slide svg {
     height: 42px;
