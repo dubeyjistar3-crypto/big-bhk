@@ -1,23 +1,114 @@
-import { Bath, BedDouble, CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Download, Image, MapPin, Phone, Ruler, ShieldCheck, X } from 'lucide-react';
+import {
+  Activity,
+  ArrowUpDown,
+  Baby,
+  Bath,
+  BedDouble,
+  Bike,
+  CalendarDays,
+  Building,
+  Building2,
+  Camera,
+  Car,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  CloudRain,
+  Coffee,
+  ConciergeBell,
+  Download,
+  Dumbbell,
+  FireExtinguisher,
+  Flame,
+  Flower2,
+  Footprints,
+  Gamepad2,
+  Image,
+  Landmark,
+  LibraryBig,
+  MapPin,
+  PackageOpen,
+  ParkingCircle,
+  PartyPopper,
+  PhoneCall,
+  PersonStanding,
+  Phone,
+  Ruler,
+  Satellite,
+  ShieldCheck,
+  TreePalm,
+  Trees,
+  Trash2,
+  Trophy,
+  Umbrella,
+  UsersRound,
+  Utensils,
+  WavesLadder,
+  WashingMachine,
+  Wrench,
+  X,
+  Zap,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useOutletContext, useParams } from 'react-router-dom';
 import api from '../api/client';
 import Seo from '../components/Seo';
 import { fallbackProperties } from '../data/fallbackProperties';
+import { normalizeAmenities } from '../data/amenities';
 import { getLocalProperties } from '../services/localStore';
 import { assetUrl, formatPrice } from '../utils/format';
 
-const amenityImages = [
-  'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=900&q=80',
-  'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?auto=format&fit=crop&w=900&q=80',
-  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80',
-  'https://images.unsplash.com/photo-1604014237800-1c9102c219da?auto=format&fit=crop&w=900&q=80',
-  'https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=900&q=80',
-  'https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=900&q=80',
-];
+const amenityIconMap = {
+  Activity,
+  ArrowUpDown,
+  Baby,
+  Bike,
+  Building,
+  Building2,
+  Camera,
+  Car,
+  CheckCircle2,
+  CloudRain,
+  Coffee,
+  ConciergeBell,
+  Dumbbell,
+  FireExtinguisher,
+  Flame,
+  Flower2,
+  Footprints,
+  Gamepad2,
+  Landmark,
+  LibraryBig,
+  PackageOpen,
+  ParkingCircle,
+  PartyPopper,
+  PersonStanding,
+  PhoneCall,
+  Satellite,
+  ShieldCheck,
+  TreePalm,
+  Trees,
+  Trash2,
+  Trophy,
+  Umbrella,
+  UsersRound,
+  Utensils,
+  WavesLadder,
+  WashingMachine,
+  Wrench,
+  Zap,
+};
 
 function getPreviousIndex(current, length) {
   return current === 0 ? length - 1 : current - 1;
+}
+
+function chunkItems(items, size) {
+  const chunks = [];
+  for (let index = 0; index < items.length; index += size) {
+    chunks.push(items.slice(index, index + size));
+  }
+  return chunks;
 }
 
 function ProjectDetail() {
@@ -28,6 +119,7 @@ function ProjectDetail() {
   const [activeImage, setActiveImage] = useState(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [amenityIndex, setAmenityIndex] = useState(0);
+  const [amenitiesPerSlide, setAmenitiesPerSlide] = useState(4);
 
   useEffect(() => {
     setProperty(getLocalProperties().find((item) => item.slug === slug) || fallbackProperties.find((item) => item.slug === slug));
@@ -40,15 +132,38 @@ function ProjectDetail() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  if (loading && !property) return <section className="section"><h1>Loading property...</h1></section>;
-  if (!property) return <section className="section"><h1>Property not found</h1></section>;
+  useEffect(() => {
+    const updateAmenitiesPerSlide = () => {
+      setAmenitiesPerSlide(window.matchMedia('(max-width: 640px)').matches ? 2 : 4);
+    };
 
-  const images = (property.images?.length ? property.images : [property.heroImage]).filter(Boolean);
-  const amenities = property.amenities || [];
+    updateAmenitiesPerSlide();
+    window.addEventListener('resize', updateAmenitiesPerSlide);
+    return () => window.removeEventListener('resize', updateAmenitiesPerSlide);
+  }, []);
+
+  const images = property ? (property.images?.length ? property.images : [property.heroImage]).filter(Boolean) : [];
+  const amenities = property ? normalizeAmenities(property.amenities || []) : [];
+  const amenitySlides = chunkItems(amenities, amenitiesPerSlide);
   const showPreviousGallery = () => setGalleryIndex((current) => getPreviousIndex(current, images.length));
   const showNextGallery = () => setGalleryIndex((current) => (current + 1) % images.length);
-  const showPreviousAmenity = () => setAmenityIndex((current) => getPreviousIndex(current, amenities.length));
-  const showNextAmenity = () => setAmenityIndex((current) => (current + 1) % amenities.length);
+  const showPreviousAmenity = () => setAmenityIndex((current) => getPreviousIndex(current, amenitySlides.length));
+  const showNextAmenity = () => setAmenityIndex((current) => (current + 1) % amenitySlides.length);
+
+  useEffect(() => {
+    setAmenityIndex(0);
+  }, [amenitiesPerSlide, slug]);
+
+  useEffect(() => {
+    if (amenitySlides.length <= 1) return undefined;
+    const timer = window.setInterval(() => {
+      setAmenityIndex((current) => (current + 1) % amenitySlides.length);
+    }, 3500);
+    return () => window.clearInterval(timer);
+  }, [amenitySlides.length]);
+
+  if (loading && !property) return <section className="section"><h1>Loading property...</h1></section>;
+  if (!property) return <section className="section"><h1>Property not found</h1></section>;
 
   return (
     <>
@@ -93,19 +208,23 @@ function ProjectDetail() {
               <span className="eyebrow">Lifestyle amenities</span>
               <h2>Everything expected from a premium address</h2>
             </div>
-            {amenities.length > 0 && (
+            {amenitySlides.length > 0 && (
               <div className="amenity-carousel">
                 <button className="slider-arrow" onClick={showPreviousAmenity} type="button" aria-label="Previous amenity"><ChevronLeft /></button>
                 <div className="amenity-track-wrap">
                   <div className="amenity-track" style={{ transform: `translateX(-${amenityIndex * 100}%)` }}>
-                    {amenities.map((amenity, index) => (
-                      <article className="amenity-slide" key={amenity}>
-                        <img src={amenityImages[index % amenityImages.length]} alt={amenity} loading="lazy" decoding="async" />
-                        <div>
-                          <CheckCircle2 size={18} />
-                          <h3>{amenity}</h3>
-                        </div>
-                      </article>
+                    {amenitySlides.map((slide, slideIndex) => (
+                      <div className="amenity-slide" key={`amenity-slide-${slideIndex}`}>
+                        {slide.map((amenity) => {
+                          const Icon = amenityIconMap[amenity.icon] || CheckCircle2;
+                          return (
+                            <article className="amenity-icon-item" key={amenity.label}>
+                              <Icon />
+                              <h3>{amenity.label}</h3>
+                            </article>
+                          );
+                        })}
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -113,13 +232,13 @@ function ProjectDetail() {
               </div>
             )}
             <div className="slider-dots">
-              {amenities.map((amenity, index) => (
+              {amenitySlides.map((slide, index) => (
                 <button
                   className={index === amenityIndex ? 'active' : ''}
-                  key={amenity}
+                  key={`amenity-dot-${index}`}
                   onClick={() => setAmenityIndex(index)}
                   type="button"
-                  aria-label={`Show ${amenity}`}
+                  aria-label={`Show amenities group ${index + 1}`}
                 />
               ))}
             </div>

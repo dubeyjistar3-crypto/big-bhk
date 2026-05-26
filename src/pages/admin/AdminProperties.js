@@ -1,7 +1,49 @@
-import { Edit, Plus, Trash2, X } from 'lucide-react';
+import {
+  Activity,
+  ArrowUpDown,
+  Baby,
+  Bike,
+  Building,
+  Building2,
+  Camera,
+  Car,
+  Dumbbell,
+  Edit,
+  FireExtinguisher,
+  Flame,
+  Flower2,
+  Footprints,
+  Gamepad2,
+  Landmark,
+  LibraryBig,
+  PackageOpen,
+  ParkingCircle,
+  PartyPopper,
+  PhoneCall,
+  Plus,
+  ShieldCheck,
+  Satellite,
+  Coffee,
+  ConciergeBell,
+  CloudRain,
+  TreePalm,
+  Trees,
+  Trash2,
+  Trophy,
+  Umbrella,
+  UsersRound,
+  Utensils,
+  WavesLadder,
+  WashingMachine,
+  Wrench,
+  Zap,
+  CheckCircle2,
+  X,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import api from '../../api/client';
 import { cityOptions } from '../../data/cities';
+import { amenityOptions, normalizeAmenities } from '../../data/amenities';
 import { deleteLocalProperty, fileListToDataUrls, getLocalProperties, saveLocalProperty } from '../../services/localStore';
 import { formatPrice } from '../../utils/format';
 
@@ -33,18 +75,57 @@ const propertyFields = [
   'area',
   'shortDescription',
   'description',
-  'amenities',
   'featured',
 ];
 
 const propertyTypes = ['Apartment', 'Villa', 'Penthouse', 'Plot'];
 const propertyStatuses = ['New Launch', 'Under Construction', 'Ready To Move'];
+const amenityIconMap = {
+  Activity,
+  ArrowUpDown,
+  Baby,
+  Bike,
+  Building,
+  Building2,
+  Camera,
+  Car,
+  CheckCircle2,
+  CloudRain,
+  Coffee,
+  ConciergeBell,
+  Dumbbell,
+  FireExtinguisher,
+  Flame,
+  Flower2,
+  Footprints,
+  Gamepad2,
+  Landmark,
+  LibraryBig,
+  PackageOpen,
+  ParkingCircle,
+  PartyPopper,
+  PhoneCall,
+  Satellite,
+  ShieldCheck,
+  TreePalm,
+  Trees,
+  Trash2,
+  Trophy,
+  Umbrella,
+  UsersRound,
+  Utensils,
+  WavesLadder,
+  WashingMachine,
+  Wrench,
+  Zap,
+};
 
 function AdminProperties() {
   const [properties, setProperties] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(blankProperty);
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [heroFile, setHeroFile] = useState(null);
   const [galleryFiles, setGalleryFiles] = useState([]);
   const [message, setMessage] = useState('');
@@ -60,10 +141,20 @@ function AdminProperties() {
   const openForm = (property = null) => {
     setFormOpen(true);
     setEditing(property);
-    setForm(property ? { ...property, amenities: property.amenities?.join(', ') || '' } : blankProperty);
+    setForm(property ? { ...property, amenities: '' } : blankProperty);
+    setSelectedAmenities(property ? normalizeAmenities(property.amenities || []) : []);
     setHeroFile(null);
     setGalleryFiles([]);
     setMessage('');
+  };
+
+  const toggleAmenity = (option) => {
+    setSelectedAmenities((current) => {
+      const exists = current.some((amenity) => amenity.label === option.label);
+      return exists
+        ? current.filter((amenity) => amenity.label !== option.label)
+        : [...current, option];
+    });
   };
 
   const updateFormField = (key, value) => {
@@ -74,6 +165,7 @@ function AdminProperties() {
     event.preventDefault();
     const payload = new FormData();
     propertyFields.forEach((key) => payload.append(key, form[key] ?? ''));
+    payload.append('amenities', JSON.stringify(selectedAmenities));
     if (heroFile) payload.append('heroImage', heroFile);
     Array.from(galleryFiles).forEach((file) => payload.append('galleryImages', file));
     const uploadConfig = { timeout: 20000 };
@@ -96,6 +188,7 @@ function AdminProperties() {
     setFormOpen(false);
     setEditing(null);
     setForm(blankProperty);
+    setSelectedAmenities([]);
     setHeroFile(null);
     setGalleryFiles([]);
     load();
@@ -133,7 +226,26 @@ function AdminProperties() {
           <input required type="number" placeholder="Area sq.ft." value={form.area} onChange={(e) => updateFormField('area', e.target.value)} />
           <input required placeholder="Short description" value={form.shortDescription} onChange={(e) => updateFormField('shortDescription', e.target.value)} />
           <textarea required placeholder="Full description" value={form.description} onChange={(e) => updateFormField('description', e.target.value)} />
-          <input placeholder="Amenities comma separated" value={form.amenities} onChange={(e) => updateFormField('amenities', e.target.value)} />
+          <div className="amenity-picker">
+            <label>Amenities with icons</label>
+            <div className="amenity-picker-grid">
+              {amenityOptions.map((option) => {
+                const Icon = amenityIconMap[option.icon] || CheckCircle2;
+                const active = selectedAmenities.some((amenity) => amenity.label === option.label);
+                return (
+                  <button
+                    className={active ? 'active' : ''}
+                    key={option.label}
+                    onClick={() => toggleAmenity(option)}
+                    type="button"
+                  >
+                    <Icon />
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           <label className="checkbox"><input type="checkbox" checked={String(form.featured) === 'true' || form.featured === true} onChange={(e) => updateFormField('featured', e.target.checked)} /> Featured property</label>
           <div className="upload-field">
             <label>Hero banner image</label>

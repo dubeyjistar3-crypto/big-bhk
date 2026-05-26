@@ -3,6 +3,7 @@ import { defaultPages } from '../data/defaultPages';
 import { defaultCityContent } from '../data/cityContent';
 import { defaultStats } from '../data/defaultStats';
 import { defaultHeaderSettings } from '../data/defaultHeader';
+import { normalizeAmenities } from '../data/amenities';
 
 const PROPERTIES_KEY = 'star_estates_properties';
 const ENQUIRIES_KEY = 'star_estates_enquiries';
@@ -85,9 +86,16 @@ export function saveLocalProperty(property, media = {}) {
   const id = property._id || `local-${Date.now()}`;
   const heroUrl = media.heroImage || null;
   const galleryUrls = media.galleryImages || [];
-  const amenities = typeof property.amenities === 'string'
-    ? property.amenities.split(',').map((item) => item.trim()).filter(Boolean)
-    : property.amenities || [];
+  let amenities = [];
+  if (typeof property.amenities === 'string') {
+    try {
+      amenities = normalizeAmenities(JSON.parse(property.amenities));
+    } catch {
+      amenities = normalizeAmenities(property.amenities.split(',').map((item) => item.trim()).filter(Boolean));
+    }
+  } else {
+    amenities = normalizeAmenities(property.amenities || []);
+  }
 
   const normalized = {
     ...property,

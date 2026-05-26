@@ -19,9 +19,7 @@ function normalizePropertyBody(body, files = {}) {
     updatedAt,
     ...editableFields
   } = body;
-  const amenities = typeof body.amenities === 'string'
-    ? body.amenities.split(',').map((item) => item.trim()).filter(Boolean)
-    : body.amenities || [];
+  const amenities = normalizeAmenities(body.amenities);
 
   const payload = {
     ...editableFields,
@@ -43,6 +41,31 @@ function normalizePropertyBody(body, files = {}) {
   }
 
   return payload;
+}
+
+function normalizeAmenities(value) {
+  if (!value) return [];
+
+  if (Array.isArray(value)) return value.map(normalizeAmenity).filter((amenity) => amenity.label);
+
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) return parsed.map(normalizeAmenity).filter((amenity) => amenity.label);
+    } catch {
+      return value.split(',').map((item) => ({ label: item.trim(), icon: 'CheckCircle2' })).filter((amenity) => amenity.label);
+    }
+  }
+
+  return [];
+}
+
+function normalizeAmenity(amenity) {
+  if (typeof amenity === 'string') return { label: amenity.trim(), icon: 'CheckCircle2' };
+  return {
+    label: amenity.label || amenity.name || '',
+    icon: amenity.icon || 'CheckCircle2',
+  };
 }
 
 exports.getProperties = async (req, res) => {

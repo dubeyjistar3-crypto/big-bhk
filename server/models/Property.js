@@ -15,7 +15,7 @@ const propertySchema = new mongoose.Schema({
   images: [String],
   shortDescription: { type: String, required: true },
   description: { type: String, required: true },
-  amenities: [String],
+  amenities: [mongoose.Schema.Types.Mixed],
   featured: { type: Boolean, default: false },
   active: { type: Boolean, default: true },
 }, { timestamps: true });

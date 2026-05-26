@@ -7,7 +7,7 @@ const connectDB = require('./config/db');
 const seed = require('./seed');
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.API_PORT || process.env.PORT || 5000;
 const basePath = process.env.BASE_PATH || '/bigbhk';
 const mongoStatus = { lastError: null, seeded: false };
 const mongoReadyStates = ['disconnected', 'connected', 'connecting', 'disconnecting'];
