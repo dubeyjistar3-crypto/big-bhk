@@ -6,8 +6,8 @@ function escapeRegex(value) {
 }
 
 function normalizePropertyBody(body, files = {}) {
-  const heroUpload = files.heroImage?.[0] ? `/uploads/${files.heroImage[0].filename}` : null;
-  const galleryUploads = (files.galleryImages || []).map((file) => `/uploads/${file.filename}`);
+  const heroUpload = files.heroImage?.[0] ? fileToDataUrl(files.heroImage[0]) : null;
+  const galleryUploads = (files.galleryImages || []).map(fileToDataUrl);
   const {
     _id,
     __v,
@@ -41,6 +41,10 @@ function normalizePropertyBody(body, files = {}) {
   }
 
   return payload;
+}
+
+function fileToDataUrl(file) {
+  return `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
 }
 
 function normalizeAmenities(value) {
